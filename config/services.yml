@@ -1,0 +1,5 @@
+services:
+  adadov.ubbc.listener:
+    class: adadov\ubbc\event\listener
+    tags:
+      - { name: event.listener }
