@@ -62,13 +62,6 @@ class listener implements EventSubscriberInterface {
 			'<h6 id="{@linkid}" class="phead level2">{@myvalue}</h6>'
 		);
 		$event['configurator']->tags['h2']->filterChain->append(array(__CLASS__, "filter_titles"));
-
-
-		$event['configurator']->BBCodes->addCustom(
-			'[tlink myvalue={TEXT;useContent}]{TEXT}[/tlink]',
-			'<a href="#">{@myvalue}</a>'
-		);
-		$event['configurator']->tags['tlink']->filterChain->append(array(__CLASS__, "filter_toc"));
 	}
 
 	public function filter_titles($tag) {
@@ -76,13 +69,6 @@ class listener implements EventSubscriberInterface {
 		$tag->setAttribute('level', $m[1]);
 		if(!$tag->hasAttribute('linkid')) {
 			$tag->setAttribute('linkid', wd_remove_accents($tag->getAttribute('myvalue')));
-		}
-		return true;
-	}
-
-	public function filter_toc($tag) {
-		if(!$tag->hasAttribute('myvalue')) {
-			return false;
 		}
 		return true;
 	}

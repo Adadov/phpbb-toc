@@ -1,0 +1,80 @@
+.phead {
+	margin: 10px 0 5px;
+}
+
+h5.phead {
+	text-decoration: underline;
+	color: red;
+	font-size: 14px;
+}
+
+h6.phead {
+	text-decoration: underline;
+	font-style: italic;
+	color: red;
+	font-size: 12px;
+	margin-left: 10px;
+}
+
+.postbody {
+	counter-reset: titre1 titre2;
+}
+
+h5.phead:before {
+	counter-increment: titre1;
+	content: counter(titre1) ". ";
+	counter-reset: titre2;
+}
+
+h6.phead:before {
+	content: counter(titre1) "." counter(titre2) ". ";
+	counter-increment: titre2;
+}
+
+#toc {
+	counter-reset: tab1 tab2;
+	margin: 10px 25px 30px;
+	width: 350px;
+}
+
+#toc:before {
+	content: "Table des matières:";
+	color: #347FCB;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+#toc ul {
+	list-style: none;
+	margin: 0;
+}
+
+#toc ul.level0 {
+	margin: 7px 10px;
+}
+
+#toc ul.level1 {
+	margin-left: 15px;
+}
+
+#toc ul.level2 {
+	margin-left: 30px;
+}
+
+#toc ul.level3 {
+	margin-left: 45px;
+}
+
+#toc ul.level0 li:before {
+	color: #4398ef;
+	content: counter(tab1) ". ";
+	counter-increment: tab1;
+	counter-reset: tab2;
+}
+
+#toc ul.level1 li:before {
+	color: #4398ef;
+	content: counter(tab1) "." counter(tab2) ". ";
+	counter-increment: tab2;
+}

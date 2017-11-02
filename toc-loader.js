@@ -1,29 +1,43 @@
-jQuery.fn.tagName = function() {
-  return this.prop("tagName").toLowerCase();
-};
-function createLevel() {
-	var lvl = $
-}
-function createEntry(obj, level) {
-  var link = $("<a></a>")
-    .attr('href', '#'+$(obj).attr('id'))
-    .text($(obj).text());
-	return $("<li></li>").append(link);
-}
-
 console.log('-- [DEBUG] LOADER TOC')
 function createTOC() {
+	$.fn.tagName = function() {
+		return this.prop("tagName").toLowerCase();
+	};
+	function createLevel(level=0) {
+		return $('<ul></ul>').attr('class', 'level'+level);
+	}
+	function createLink(header) {
+		return $("<a></a>")
+			.attr('href', '#'+$(header).attr('id'))
+			.text($(header).text());
+	}
+
 	console.log('-- BEGIN TOC loader');
+	var last = 0, levels = [];
+	levels[0] = createLevel(0);
+	$('#toc').append(levels[0]);
 	$('.content > .phead').each(function(index) {
 		console.log('Title find:',this);
-		if ($(this).tagName() == 'h5') {
-			var link = $("<a></a>")
-			 .attr('href', '#'+$(this).attr('id'))
-			 .text($(this).text());
-			$('#toc').append(tmp).append('<br />');
+		var lvl = parseInt(/h([0-9])/.exec($(this).tagName())[1]) - 5;
+		//alert('Level: '+lvl+' last: '+last);
+		var entry;
+		if (lvl < last) { // On redescend d'un niveau
+			for(var i=last; i>lvl; i--) {
+				delete levels[i];
+			}
+		} else if (lvl > last) {
+			if ( (lvl-last) > 1 ) {
+				console.log('Niveau manquant !!');
+			}
+			levels[lvl] = createLevel(lvl);
+			entry = $(levels[lvl]).appendTo(levels[last]);
+		} else {
+			entry = levels[last];
 		}
+		entry = $('<li></li>').appendTo(entry);
+		$(entry).append(createLink(this));
+		$(levels[lvl]).append(entry);
 	});
 	console.log('-- END TOC loader');
 };
-//window.addEventListener("load", createTOC, true);
-createTOC();
+window.addEventListener("load", createTOC, true);
