@@ -7,6 +7,16 @@ use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use adadov\ubbc\ext;
 
+function wd_remove_accents($str, $charset='utf-8') {
+	$str = htmlentities($str, ENT_NOQUOTES, $charset);
+
+	$str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+	$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
+	$str = preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
+
+	return $str;
+}
+
 /**
  * Event listener
  */
@@ -39,18 +49,7 @@ class listener implements EventSubscriberInterface {
 		);
 	}
 
-	// public function configure_toc($event) {
-	// 	$cnf = $event['configurator'];
-
-	// 	$cnf->BBCodes->addCustom('[toc]{TEXT}[/toc]', '<div id="toc">{TEXT}</div>');
-	// }
-
 	public function configure_titles($event) {
-		//unset($event['configurator']->BBCodes['h1']);
-		//unset($event['configurator']->tags['h1']);
-		//unset($event['configurator']->BBCodes['h2']);
-		//unset($event['configurator']->tags['h2']);
-
 		$event['configurator']->BBCodes->addCustom(
 			'[h1 myvalue={TEXT;useContent} linkid={ANYTHING;optional}]{TEXT1}[/h1]',
 			'<h5 id="{@linkid}" class="phead level1">{@myvalue}</h5>'
@@ -70,28 +69,14 @@ class listener implements EventSubscriberInterface {
 			'<a href="#">{@myvalue}</a>'
 		);
 		$event['configurator']->tags['tlink']->filterChain->append(array(__CLASS__, "filter_toc"));
-
-		// $event['configurator']->BBCodes->addCustom(
-		// 	'[TOC1][/TOC1]',
-		// 	'<script type="text/javscript">
-		// 	  function createTOC() {
-   		//	    var lnks = document.getElementsByClassName("phead");
-		// 	    console.log(lnks);
-		// 	  };
-		// 	  document.addEventListener("onload", createTOC, true);
-		// 	  </script>
-		// 	<div id="toc"></div>'
-		// );
-		// $event['configurator']->tags['TOC']->autoClose(true);
 	}
 
 	public function filter_titles($tag) {
 		preg_match('/H([0-9])/', $tag->getName(), $m);
 		$tag->setAttribute('level', $m[1]);
 		if(!$tag->hasAttribute('linkid')) {
-			$tag->setAttribute('linkid', 'test');
+			$tag->setAttribute('linkid', wd_remove_accents($tag->getAttribute('myvalue')));
 		}
-		//echo '<pre>'.print_r($tag).'</pre>';
 		return true;
 	}
 
