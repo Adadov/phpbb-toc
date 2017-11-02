@@ -13,6 +13,8 @@ function wd_remove_accents($str, $charset='utf-8') {
 	$str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
 	$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
 	$str = preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
+	$str = preg_replace('#\s#', '-', $str);
+	$str = strtolower($str);
 
 	return $str;
 }
@@ -50,18 +52,20 @@ class listener implements EventSubscriberInterface {
 	}
 
 	public function configure_titles($event) {
-		$event['configurator']->BBCodes->addCustom(
-			'[h1 myvalue={TEXT;useContent} linkid={ANYTHING;optional}]{TEXT1}[/h1]',
-			'<h5 id="{@linkid}" class="phead level1">{@myvalue}</h5>'
-		);
+		// $event['configurator']->BBCodes->addCustom(
+		// 	'[h1 myvalue={TEXT;useContent} linkid={ANYTHING;optional}]{TEXT1}[/h1]',
+		// 	'<h5 id="{@linkid}" class="phead level1">{@myvalue}</h5>'
+		// );
 		$event['configurator']->tags['h1']->filterChain->append(array(__CLASS__, "filter_titles"));
+		$event['configurator']->tags['H1']->filterChain->append(array(__CLASS__, "filter_titles"));
 
 
-		$event['configurator']->BBCodes->addCustom(
-			'[h2 myvalue={TEXT;useContent} linkid={ANYTHING;optional}]{TEXT1}[/h2]',
-			'<h6 id="{@linkid}" class="phead level2">{@myvalue}</h6>'
-		);
+		// $event['configurator']->BBCodes->addCustom(
+		// 	'[h2 myvalue={TEXT;useContent} linkid={ANYTHING;optional}]{TEXT1}[/h2]',
+		// 	'<h6 id="{@linkid}" class="phead level2">{@myvalue}</h6>'
+		// );
 		$event['configurator']->tags['h2']->filterChain->append(array(__CLASS__, "filter_titles"));
+		$event['configurator']->tags['H2']->filterChain->append(array(__CLASS__, "filter_titles"));
 	}
 
 	public function filter_titles($tag) {
