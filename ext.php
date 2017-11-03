@@ -1,12 +1,12 @@
 <?php
 /**
- *
- * Utopia BBCodes
- *
- * @copyright (c) 2015 Matt Friedman
- * @license GNU General Public License, version 2 (GPL-2.0)
- *
- */
+*
+* Utopia BBCodes
+*
+* @copyright (c) 2017 David OLIVIER (adadov@adadov.net)
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+*/
 
 namespace adadov\ubbc;
 
