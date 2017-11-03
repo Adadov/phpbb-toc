@@ -1,20 +1,20 @@
 <?php
 /**
 *
-* Utopia BBCodes
+* PhpBB TOC
 *
 * @copyright (c) 2017 David OLIVIER (adadov@adadov.net)
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
 
-namespace adadov\ubbc\event;
+namespace adadov\pbbtoc\event;
 
 use phpbb\controller\helper;
 use phpbb\template\template;
 use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use adadov\ubbc\ext;
+use adadov\pbbtoc\ext;
 
 function wd_remove_accents($str, $charset='utf-8') {
 	$str = htmlentities($str, ENT_NOQUOTES, $charset);

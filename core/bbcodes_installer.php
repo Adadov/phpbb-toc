@@ -1,12 +1,17 @@
 <?php
 /**
 *
-* Utopia BBCodes
+* phpBB TOC
 *
 * @copyright (c) 2017 David OLIVIER (adadov@adadov.net)
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
+
+namespace adadov\pbbtoc\core;
+
+use phpbb\db\driver\driver_interface;
+use adadov\pbbtoc\core\file_loader;
 
 class bbcodes_installer {
 	/** @var \acp_bbcodes */
@@ -20,12 +25,19 @@ class bbcodes_installer {
 	 * @return void
 	 */
 	public function __construct(driver_interface $db, $phpbb_root_path, $php_ext) {
+		$this->db = $db;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
-		//$this->acp_bbcodes = $this.>get_acp_bbcodes();
+		$this->acp_bbcodes = $this->get_acp_bbcodes();
+	}
 
-		$this->acp_bbcodes = new \acp_bbcodes();
+	protected function get_acp_bbcodes() {
+		if (!class_exists('acp_bbcodes')) {
+			include $this->phpbb_root_path . 'includes/acp/acp_bbcodes.' . $this->php_ext;
+		}
+
+		return new \acp_bbcodes();
 	}
 
 	/**
@@ -38,7 +50,7 @@ class bbcodes_installer {
 			$bb_data = $this->build_bbcode($bb_data);
 
 			if ($bbcode = $this->bbcode_exists($bb_name, $bb_data['bbcode_tag'])) {
-				$this->update($bbcode, $bb_data);
+				$this->update_bbcode($bbcode, $bb_data);
 			} else {
 				$this->add_bbcode($bb_data);
 			}
@@ -51,9 +63,9 @@ class bbcodes_installer {
 	 * @access protected
 	 */
 	protected function get_max_id() {
-		$sql = 'SELECT MAX(' . $this->db->sql_escape($column) . ') AS max FROM ' . BBCODES_TABLE;
+		$sql = 'SELECT MAX(' . $this->db->sql_escape('bbcode_id') . ') AS maximum FROM ' . BBCODES_TABLE;
 		$result = $this->db->sql_query($sql);
-		$maximum = $this->db->sql_fetchfield('max');
+		$maximum = $this->db->sql_fetchfield('maximum');
 		$this->db->sql_freeresult($result);
 
 		return (int) $maximum;
@@ -67,6 +79,18 @@ class bbcodes_installer {
 	 * @access protected
 	 */
 	protected function build_bbcode(array $bb_data) {
+		error_log('BBTPL: '.$bb_data['bbcode_tpl']);
+		if (preg_match('/##FILE#(.*)?#/', $bb_data['bbcode_tpl'], $m)) {
+			error_log('File:'.$this->phpbb_root_path.$m[1]);
+			if(!file_exists($this->phpbb_root_path.$m[1])) {
+				error_log('Impossible de trouver le fichier !!');
+			} else {
+				$content = file_loader::load($this->phpbb_root_path.$m[1]);
+				error_log('Content:'.print_r($content, true));
+				$bb_data['bbcode_tpl'] = preg_replace('/##FILE#[^#]*#/', $content, $bb_data['bbcode_tpl']);
+				error_log('BBTPL: '.$bb_data['bbcode_tpl']);
+			}
+		}
 		$data = $this->acp_bbcodes->build_regexp($bb_data['bbcode_match'], $bb_data['bbcode_tpl']);
 
 		$bb_data = array_replace($bb_data, array(
@@ -90,7 +114,7 @@ class bbcodes_installer {
 	protected function bbcode_exists($bb_name, $bb_tag) {
 		$sql = 'SELECT bbcode_id FROM '.BBCODES_TABLE.
 			" WHERE LOWER(bbcode_tag) = '".$this->db->sql_escape(strtolower($bb_name))."'".
-			" OR LOWER(bbcode_name) = '".$this->db->sql_escape(strtolower($bb_tag))."'";
+			" OR LOWER(bbcode_tag) = '".$this->db->sql_escape(strtolower($bb_tag))."'";
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

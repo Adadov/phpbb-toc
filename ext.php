@@ -1,14 +1,14 @@
 <?php
 /**
 *
-* Utopia BBCodes
+* PhpBB TOC
 *
 * @copyright (c) 2017 David OLIVIER (adadov@adadov.net)
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
 
-namespace adadov\ubbc;
+namespace adadov\pbbtoc;
 
 class ext extends \phpbb\extension\base
 {

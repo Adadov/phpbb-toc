@@ -1,21 +1,26 @@
 <?php
 /**
 *
-* Utopia BBCodes
+* PhpBB TOC
 *
 * @copyright (c) 2017 David OLIVIER (adadov@adadov.net)
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
 
-namespace adadov\ubbc\migrations;
+namespace adadov\pbbtoc\migrations;
 
-class v100_install_bbcodes extends \adadov\ubbc\core\bbcodes_migration {
+use adadov\pbbtoc\core\file_loader;
+
+
+class v100_install_bbcodes extends \adadov\pbbtoc\core\bbcodes_migration {
+
 	/**
 	 * {@inheritdoc}
 	 */
 	public function effectively_installed() {
-		return isset($this->config['ubbc_version']) && version_compare($this->config['ubbc_version'], '1.0.0', '>=');
+		return false;
+//		return isset($this->config['pbbtoc_version']) && version_compare($this->config['pbbtoc_version'], '1.0.0', '>=');
 	}
 
 	/**
@@ -23,7 +28,7 @@ class v100_install_bbcodes extends \adadov\ubbc\core\bbcodes_migration {
 	 */
 	public function update_data() {
 		return array(
-			array('config.add', array('ubbc_version', '1.0.0')),
+			array('config.add', array('pbbtoc_version', '1.0.0')),
 			array('custom', array(array($this, 'install_bbcodes'))),
 		);
 	}
@@ -60,7 +65,7 @@ class v100_install_bbcodes extends \adadov\ubbc\core\bbcodes_migration {
 		'toc' => array(
 			'bbcode_helpline'	=> 'Afficher la table des matières',
 			'bbcode_match'		=> '[toc][/toc]',
-			'bbcode_tpl'		=> '<div id="toc"></div><script type="text/javascript">'.file_get_contents($toc_loader).'</script>',
+			'bbcode_tpl'		=> '<div id="toc"></div><script type="text/javascript">##FILE#ext/adadov/pbbtoc/toc-loader.js#</script>',
 		),
 	);
 }

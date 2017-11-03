@@ -13,14 +13,17 @@ function createTOC() {
 	}
 
 	console.log('-- BEGIN TOC loader');
+
 	var last = 0, levels = [];
 	levels[0] = createLevel(0);
+
 	$('#toc').append(levels[0]);
 	$('.content > .phead').each(function(index) {
 		console.log('Title find:',this);
 		var lvl = parseInt(/h([0-9])/.exec($(this).tagName())[1]) - 5;
-		//alert('Level: '+lvl+' last: '+last);
+
 		var entry;
+
 		if (lvl < last) { // On redescend d'un niveau
 			for(var i=last; i>lvl; i--) {
 				delete levels[i];
